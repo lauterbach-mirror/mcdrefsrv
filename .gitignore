@@ -3,7 +3,3 @@
 
 # output
 build
-
-# mcd api header
-src/mcd_api.h
-src/mcd_types.h
