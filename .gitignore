@@ -3,4 +3,8 @@
 .vscode
 
 # output
-build
+out
+
+# mcd api header
+src/mcd_api.h
+src/mcd_types.h

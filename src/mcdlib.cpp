@@ -27,8 +27,8 @@ SOFTWARE.
  * Helper functions can be found in internals.cpp
  */
 
-#include "mcd_shared_library.h"
 #include "mcdlib.h"
+#include "mcd_shared_defines.h"
 #include <cassert>
 #include <limits>
 
