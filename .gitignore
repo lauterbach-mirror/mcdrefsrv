@@ -1,0 +1,6 @@
+# files for visual studio (code)
+.vs
+.vscode
+
+# output
+build
