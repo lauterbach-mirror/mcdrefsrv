@@ -42,7 +42,6 @@ SOFTWARE.
 #include <map>
 
 #if defined(WIN32)
-#define MCD_SHARED_LIBRARY_API __declspec(dllexport)
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #pragma comment (lib, "Ws2_32.lib")
@@ -50,7 +49,6 @@ SOFTWARE.
 #define CLOSESOCKET(s) closesocket(s)
 #define GETSOCKETERRNO() (WSAGetLastError())
 #else
-#define MCD_SHARED_LIBRARY_API
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -735,64 +733,6 @@ extern std::unique_ptr<MCDServer> g_mcd_server; /**< Unique pointer to the compl
 
 /** @} */
 /* end global variables */
-
-/* start library funcitons */
-
-/** \defgroup MCDAPIfunctions MCD API functions
-
-Detailed info on all MCD API functions can be found in mcd_api.h.
-
-*/
-
-/** \addtogroup MCDAPIfunctions 
- * @{ */
-
-extern "C" MCD_SHARED_LIBRARY_API void mcd_qry_error_info_f(const mcd_core_st *i_core, mcd_error_info_st *i_error_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_open_server_f(const mcd_char_t* i_system_key, const mcd_char_t* i_config_string, mcd_server_st** i_server);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_initialize_f(const mcd_api_version_st* i_version_req, mcd_impl_version_info_st* i_impl_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_servers_f(const mcd_char_t *i_host, mcd_bool_t i_running, uint32_t i_start_index, uint32_t *i_num_servers, mcd_server_info_st *i_server_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_systems_f(uint32_t i_start_index, uint32_t* i_num_systems, mcd_core_con_info_st *i_system_con_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_devices_f(const mcd_core_con_info_st *i_system_con_info, uint32_t i_start_index, uint32_t *i_num_devices, mcd_core_con_info_st *i_device_con_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_cores_f(const mcd_core_con_info_st *i_connection_info, uint32_t i_start_index, uint32_t *i_num_cores, mcd_core_con_info_st *i_core_con_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_open_core_f(const mcd_core_con_info_st *i_core_con_info, mcd_core_st **i_core);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_close_core_f(const mcd_core_st *i_core);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_rst_classes_f(const mcd_core_st *i_core, uint32_t *i_rst_class_vector);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_rst_class_info_f(const mcd_core_st *i_core, uint8_t i_rst_class, mcd_rst_info_st *i_rst_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_trig_info_f(const mcd_core_st *i_core, mcd_trig_info_st *i_trig_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_ctrigs_f(const mcd_core_st *i_core, uint32_t i_start_index, uint32_t *i_num_ctrigs, mcd_ctrig_info_st *i_ctrig_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_traces_f(const mcd_core_st *i_core, uint32_t i_start_index, uint32_t *i_num_traces, mcd_trace_info_st *i_trace_info);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_mem_spaces_f(const mcd_core_st *i_core, uint32_t i_start_index, uint32_t *i_num_mem_spaces, mcd_memspace_st *i_mem_spaces);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_reg_groups_f(const mcd_core_st *i_core, uint32_t i_start_index, uint32_t *i_num_reg_groups, mcd_register_group_st *i_reg_groups);
-
-/**
- * Detailed info in mcd_api.h.
- * Speciality of TRACE32: If i_reg_group_id is set to zero, information about all registers is requested.
- * For example if i_reg_group_id and i_num_regs are set to zero, the number of all registers has to be returned.
- */
-
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_reg_map_f(const mcd_core_st *i_core, uint32_t i_reg_group_id, uint32_t i_start_index, uint32_t *i_num_regs, mcd_register_info_st *i_reg_info);
-
-/**
- * Detailed info in mcd_api.h.
- * Attention: this function might request resets, which were not proved by the library.
- * Therefore it first has to checked if the requested reset exists.
- * This is done by comparing it to the local reset vector using \ref get_reset_class_vector.
- */
-
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_rst_f(const mcd_core_st *i_core, uint32_t i_rst_class_vector, mcd_bool_t i_rst_and_halt);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_close_server_f(const mcd_server_st *i_server);
-extern "C" MCD_SHARED_LIBRARY_API void mcd_exit_f(void);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_state_f(const mcd_core_st *i_core, mcd_core_state_st *i_state);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_stop_f(const mcd_core_st *i_core, mcd_bool_t i_global);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_run_f(const mcd_core_st *i_core, mcd_bool_t i_global);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_step_f(const mcd_core_st *i_core, mcd_bool_t i_global, mcd_core_step_type_et i_step_type, uint32_t i_n_steps);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_execute_txlist_f(const mcd_core_st *i_core, mcd_txlist_st *i_txlist);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_create_trig_f(const mcd_core_st *i_core, void *i_trig, uint32_t *i_trig_id);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_activate_trig_set_f(const mcd_core_st *i_core);
-extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_remove_trig_f(const mcd_core_st *i_core, uint32_t i_trig_id);
-
-/** @} */
-/* end library funcitons */
 
 /* start helper functions */
 /** \defgroup helperfunctions Helper functions

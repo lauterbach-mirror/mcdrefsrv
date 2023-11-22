@@ -147,6 +147,15 @@ VERSION HISTORY
 extern "C" {
 #endif
 
+/*
+  Add prefix for mcd shared library functions
+*/
+#if defined(WIN32)
+#define MCD_SHARED_LIBRARY_API __declspec(dllexport)
+#else
+#define MCD_SHARED_LIBRARY_API
+#endif
+
 
 
 /** \defgroup ConstDefGroup Definitions of Constants
@@ -1593,7 +1602,7 @@ as well as clean-up connections before closure.
 	\c MCD_ERR_NONE     if successful.\n
 	\c MCD_ERR_GENERAL  if target implementation is incompatible.
 */
-mcd_return_et mcd_initialize_f(const mcd_api_version_st *version_req, mcd_impl_version_info_st *impl_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_initialize_f(const mcd_api_version_st *version_req, mcd_impl_version_info_st *impl_info);
 
 
 /** \brief Function cleaning up all core and server connections from a tool.
@@ -1601,7 +1610,7 @@ mcd_return_et mcd_initialize_f(const mcd_api_version_st *version_req, mcd_impl_v
 	This function allows to perform some cleanup functionality for all core
 	connections to a particular debugger before closing the connections.
  */
-void mcd_exit_f(void);
+extern "C" MCD_SHARED_LIBRARY_API void mcd_exit_f(void);
 
 /*@} END: MCDTargetInitAPI */
 
@@ -1642,7 +1651,7 @@ server configuration.
 	 \c MCD_ERR_NONE        if successful.\n
 	 \c MCD_ERR_CONNECTION  if query failed.
 */
-mcd_return_et mcd_qry_servers_f(const mcd_char_t *host, mcd_bool_t running, uint32_t start_index, uint32_t *num_servers, mcd_server_info_st *server_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_servers_f(const mcd_char_t *host, mcd_bool_t running, uint32_t start_index, uint32_t *num_servers, mcd_server_info_st *server_info);
 
 
 /** \brief Function opening the connection to a server on a host computer.
@@ -1719,7 +1728,7 @@ mcd_return_et mcd_qry_servers_f(const mcd_char_t *host, mcd_bool_t running, uint
 	 \c MCD_ERR_NONE        if successful.\n
 	 \c MCD_ERR_CONNECTION  if server connection failed.
 */
-mcd_return_et mcd_open_server_f(const mcd_char_t *system_key, const mcd_char_t *config_string, mcd_server_st **server);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_open_server_f(const mcd_char_t *system_key, const mcd_char_t *config_string, mcd_server_st **server);
 
 
 /** \brief Function closing the connection to a debug server on a host computer.
@@ -1735,7 +1744,7 @@ mcd_return_et mcd_open_server_f(const mcd_char_t *system_key, const mcd_char_t *
 	 \c MCD_ERR_NONE        if successful.\n
 	 \c MCD_ERR_CONNECTION  if closing the server connection failed.
 */
-mcd_return_et mcd_close_server_f(const mcd_server_st *server);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_close_server_f(const mcd_server_st *server);
 
 
 /** \brief Function changing the configuration of an open debug server.
@@ -1760,7 +1769,7 @@ mcd_return_et mcd_close_server_f(const mcd_server_st *server);
 	 \c MCD_ERR_NONE        if successful.\n
 	 \c MCD_ERR_CONNECTION  if configuration of the server or access hardware device failed.
 */
-mcd_return_et mcd_set_server_config_f(const mcd_server_st *server, const mcd_char_t *config_string);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_set_server_config_f(const mcd_server_st *server, const mcd_char_t *config_string);
 
 
 /** \brief Function retrieving the configuration string of a debug server.
@@ -1793,7 +1802,7 @@ mcd_return_et mcd_set_server_config_f(const mcd_server_st *server, const mcd_cha
 	 \c MCD_ERR_CONNECTION        if server connection could not be accessed.\n
 	 \c MCD_ERR_RESULT_TOO_LONG   if requested configuration string is longer than \c max_len.
 */
-mcd_return_et mcd_qry_server_config_f(const mcd_server_st *server, uint32_t *max_len, mcd_char_t *config_string);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_server_config_f(const mcd_server_st *server, uint32_t *max_len, mcd_char_t *config_string);
 
 
 /*@} END: MCDServerAPI */
@@ -1841,7 +1850,7 @@ available modes of a specific core.
 	\c MCD_ERR_PARAM    if \c system_index is equal or larger than the number of available systems.\n
 	\c MCD_ERR_GENERAL  on any other error.
 */
-mcd_return_et mcd_qry_systems_f(uint32_t start_index, uint32_t* num_systems, mcd_core_con_info_st *system_con_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_systems_f(uint32_t start_index, uint32_t* num_systems, mcd_core_con_info_st *system_con_info);
 
 
 /** \brief Function querying the core connection information of a specified number of devices of a system.
@@ -1888,7 +1897,7 @@ mcd_return_et mcd_qry_systems_f(uint32_t start_index, uint32_t* num_systems, mcd
 	\c MCD_ERR_PARAM      if \c start_index is equal or larger than the number of available devices.\n
 	\c MCD_ERR_GENERAL    on any other error.
 */
-mcd_return_et mcd_qry_devices_f(const mcd_core_con_info_st *system_con_info, uint32_t start_index, uint32_t *num_devices, mcd_core_con_info_st *device_con_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_devices_f(const mcd_core_con_info_st *system_con_info, uint32_t start_index, uint32_t *num_devices, mcd_core_con_info_st *device_con_info);
 
 
 /** \brief Function querying the core connection information of a specified number of cores of a system/device.
@@ -1936,7 +1945,7 @@ mcd_return_et mcd_qry_devices_f(const mcd_core_con_info_st *system_con_info, uin
 	\c MCD_ERR_PARAM      if \c start_index is equal or larger than the number of available cores.\n
 	\c MCD_ERR_GENERAL    on any other error.
 */
-mcd_return_et mcd_qry_cores_f(const mcd_core_con_info_st *connection_info, uint32_t start_index, uint32_t *num_cores, mcd_core_con_info_st *core_con_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_cores_f(const mcd_core_con_info_st *connection_info, uint32_t start_index, uint32_t *num_cores, mcd_core_con_info_st *core_con_info);
 
 
 /** \brief Function querying the available modes of a core.
@@ -1962,7 +1971,7 @@ mcd_return_et mcd_qry_cores_f(const mcd_core_con_info_st *connection_info, uint3
 	\c MCD_ERR_PARAM      if \c start_index is equal or larger than the number of available core modes.\n
 	\c MCD_ERR_GENERAL    on any other error.
 */
-mcd_return_et mcd_qry_core_modes_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_modes, mcd_core_mode_info_st *core_mode_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_core_modes_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_modes, mcd_core_mode_info_st *core_mode_info);
 
 
 /*@} END: MCDTargetSysFeaturesAPI */
@@ -1999,7 +2008,7 @@ for a transaction list.
 	\c MCD_ERR_DEVICE_LOCKED  if the requested device is locked.\n
 	\c MCD_ERR_CONNECTION     if opening the core connection failed.
 */
-mcd_return_et mcd_open_core_f(const mcd_core_con_info_st *core_con_info, mcd_core_st **core);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_open_core_f(const mcd_core_con_info_st *core_con_info, mcd_core_st **core);
 
 
 /** \brief Function closing a core connection.
@@ -2014,7 +2023,7 @@ mcd_return_et mcd_open_core_f(const mcd_core_con_info_st *core_con_info, mcd_cor
 	\c MCD_ERR_NONE          if successful.\n
 	\c MCD_ERR_CONNECTION    if closing the core connection failed.
 */
-mcd_return_et mcd_close_core_f(const mcd_core_st *core);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_close_core_f(const mcd_core_st *core);
 
 
 /** \brief Function allowing the access to detailed error and/or event information after an API call.
@@ -2031,7 +2040,7 @@ mcd_return_et mcd_close_core_f(const mcd_core_st *core);
 				type \ref mcd_core_st.
 	\param error_info [out] : Pointer to a structure containing the detailed error/event information.
 */
-void mcd_qry_error_info_f(const mcd_core_st *core, mcd_error_info_st *error_info);
+extern "C" MCD_SHARED_LIBRARY_API void mcd_qry_error_info_f(const mcd_core_st *core, mcd_error_info_st *error_info);
 
 
 /** \brief Function retrieving the file information of an IP-XACT description of the addressed component.
@@ -2063,7 +2072,7 @@ void mcd_qry_error_info_f(const mcd_core_st *core, mcd_error_info_st *error_info
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if URL could not be provided.
 */
-mcd_return_et mcd_qry_device_description_f(const mcd_core_st *core, mcd_char_t *url, uint32_t *url_length);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_device_description_f(const mcd_core_st *core, mcd_char_t *url, uint32_t *url_length);
 
 
 /** \brief Function querying the maximum payload size for a transaction list.
@@ -2086,7 +2095,7 @@ mcd_return_et mcd_qry_device_description_f(const mcd_core_st *core, mcd_char_t *
 	\c MCD_ERR_NONE     if successful.\n
 	\c MCD_ERR_GENERAL  on any other error.
 */
-mcd_return_et mcd_qry_max_payload_size_f(const mcd_core_st *core, uint32_t *max_payload);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_max_payload_size_f(const mcd_core_st *core, uint32_t *max_payload);
 
 
 /** \brief Function querying the input handle for the connection.
@@ -2106,7 +2115,7 @@ mcd_return_et mcd_qry_max_payload_size_f(const mcd_core_st *core, uint32_t *max_
 	\c MCD_ERR_NONE     if successful.\n
 	\c MCD_ERR_GENERAL  on any other error.
 */
-mcd_return_et mcd_qry_input_handle_f(const mcd_core_st *core, uint32_t *input_handle);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_input_handle_f(const mcd_core_st *core, uint32_t *input_handle);
 
 
 /*@} END: MCDCoreAPI */
@@ -2147,7 +2156,7 @@ or memory blocks of a specified memory space.
 	 \c MCD_ERR_NONE              if successful.\n
 	 \c MCD_ERR_NO_MEM_SPACES     if no memory spaces are defined for this core.
 */
-mcd_return_et mcd_qry_mem_spaces_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_mem_spaces, mcd_memspace_st *mem_spaces);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_mem_spaces_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_mem_spaces, mcd_memspace_st *mem_spaces);
 
 
 /**  \brief Function querying the available memory blocks of a specified memory space.
@@ -2181,7 +2190,7 @@ mcd_return_et mcd_qry_mem_spaces_f(const mcd_core_st *core, uint32_t start_index
 	 \c MCD_ERR_NONE              if successful.\n
 	 \c MCD_ERR_NO_MEM_BLOCKS     if no memory blocks are defined for this memory space.
 */
-mcd_return_et mcd_qry_mem_blocks_f(const mcd_core_st *core, uint32_t mem_space_id, uint32_t start_index, uint32_t *num_mem_blocks, mcd_memblock_st *mem_blocks);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_mem_blocks_f(const mcd_core_st *core, uint32_t mem_space_id, uint32_t start_index, uint32_t *num_mem_blocks, mcd_memblock_st *mem_blocks);
 
 
 /**  \brief Function querying the active (swapped-in) overlays at the current time.
@@ -2208,7 +2217,7 @@ mcd_return_et mcd_qry_mem_blocks_f(const mcd_core_st *core, uint32_t mem_space_i
 	 \c MCD_ERR_NONE         if successful.\n
 	 \c MCD_ERR_OVERLAYS     if retrieving active memory overlay information failed.
 */
-mcd_return_et mcd_qry_active_overlays_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_active_overlays, uint32_t *active_overlays);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_active_overlays_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_active_overlays, uint32_t *active_overlays);
 
 
 /*@} END: MCDMemAccessAPI */
@@ -2277,7 +2286,7 @@ mcd_return_et mcd_qry_active_overlays_f(const mcd_core_st *core, uint32_t start_
 	\c MCD_ERR_NONE              if successful.\n
 	\c MCD_ERR_NO_REG_GROUPS     if no register groups are defined for this core.
 */
-mcd_return_et mcd_qry_reg_groups_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_reg_groups, mcd_register_group_st *reg_groups);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_reg_groups_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_reg_groups, mcd_register_group_st *reg_groups);
 
 
 /**  \brief Function querying the register information of a particular register group.
@@ -2309,7 +2318,7 @@ mcd_return_et mcd_qry_reg_groups_f(const mcd_core_st *core, uint32_t start_index
 	\c MCD_ERR_NONE             if successful.\n
 	\c MCD_ERR_REG_GROUP_ID     if no register group with this ID is available for this core.
 */
-mcd_return_et mcd_qry_reg_map_f(const mcd_core_st *core, uint32_t reg_group_id, uint32_t start_index, uint32_t *num_regs, mcd_register_info_st *reg_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_reg_map_f(const mcd_core_st *core, uint32_t reg_group_id, uint32_t start_index, uint32_t *num_regs, mcd_register_info_st *reg_info);
 
 
 /**  \brief Function querying the component registers of a compound register.
@@ -2341,7 +2350,7 @@ mcd_return_et mcd_qry_reg_map_f(const mcd_core_st *core, uint32_t reg_group_id, 
 	\c MCD_ERR_NONE                  if successful.\n
 	\c MCD_ERR_REG_NOT_COMPOUND      if no compound register with this ID is available for this core.
 */
-mcd_return_et mcd_qry_reg_compound_f(const mcd_core_st *core, uint32_t compound_reg_id, uint32_t start_index, uint32_t *num_reg_ids, uint32_t *reg_id_array);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_reg_compound_f(const mcd_core_st *core, uint32_t compound_reg_id, uint32_t start_index, uint32_t *num_reg_ids, uint32_t *reg_id_array);
 
 
 /*@} END: MCDRegAccessAPI */
@@ -2373,7 +2382,7 @@ trigger set defined for a core.
 	\c MCD_ERR_NONE        if successful.\n
 	\c MCD_ERR_GENERAL     if trigger capabilities could not be retrieved.
 */
-mcd_return_et mcd_qry_trig_info_f(const mcd_core_st *core, mcd_trig_info_st *trig_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_trig_info_f(const mcd_core_st *core, mcd_trig_info_st *trig_info);
 
 
 /** \brief Function querying information about custom triggers.
@@ -2400,7 +2409,7 @@ mcd_return_et mcd_qry_trig_info_f(const mcd_core_st *core, mcd_trig_info_st *tri
 	\c MCD_ERR_NONE     if successful.\n
 	\c MCD_ERR_PARAM    if custom trigger ID does not exist.
 */
-mcd_return_et mcd_qry_ctrigs_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_ctrigs, mcd_ctrig_info_st *ctrig_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_ctrigs_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_ctrigs, mcd_ctrig_info_st *ctrig_info);
 
 
 /** \brief Function allowing the creation of a new trigger.
@@ -2429,7 +2438,7 @@ mcd_return_et mcd_qry_ctrigs_f(const mcd_core_st *core, uint32_t start_index, ui
 	\c MCD_ERR_NONE          if successful.\n
 	\c MCD_ERR_TRIG_CREATE   if trigger could not be created.
 */
-mcd_return_et mcd_create_trig_f(const mcd_core_st *core, void *trig, uint32_t *trig_id);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_create_trig_f(const mcd_core_st *core, void *trig, uint32_t *trig_id);
 
 
 /** \brief Function querying the contents of a trigger.
@@ -2456,7 +2465,7 @@ mcd_return_et mcd_create_trig_f(const mcd_core_st *core, void *trig, uint32_t *t
 	\c MCD_ERR_RESULT_TOO_LONG   if requested trigger is larger than \c max_trig_size.\n
 	\c MCD_ERR_TRIG_ACCESS       if trigger could not be returned for any other reason.
 */
-mcd_return_et mcd_qry_trig_f(const mcd_core_st *core, uint32_t trig_id, uint32_t max_trig_size, void *trig);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_trig_f(const mcd_core_st *core, uint32_t trig_id, uint32_t max_trig_size, void *trig);
 
 
 /** \brief Function allowing a user to delete a particular trigger from a trigger set.
@@ -2472,7 +2481,7 @@ mcd_return_et mcd_qry_trig_f(const mcd_core_st *core, uint32_t trig_id, uint32_t
 	\c MCD_ERR_NONE              if successful.\n
 	\c MCD_ERR_TRIG_ACCESS       if trigger could not be accessed for deletion.
 */
-mcd_return_et mcd_remove_trig_f(const mcd_core_st *core, uint32_t trig_id);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_remove_trig_f(const mcd_core_st *core, uint32_t trig_id);
 
 
 /** \brief Function allowing a user to query the trigger states from the target.
@@ -2491,7 +2500,7 @@ mcd_return_et mcd_remove_trig_f(const mcd_core_st *core, uint32_t trig_id);
 	\c MCD_ERR_NONE              if successful.\n
 	\c MCD_ERR_TRIG_ACCESS       if trigger could not be accessed.
 */
-mcd_return_et mcd_qry_trig_state_f(const mcd_core_st *core, uint32_t trig_id, mcd_trig_state_st *trig_state);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_trig_state_f(const mcd_core_st *core, uint32_t trig_id, mcd_trig_state_st *trig_state);
 
 
 /** \brief Function allowing a user to activat a trigger set on the target.
@@ -2511,7 +2520,7 @@ mcd_return_et mcd_qry_trig_state_f(const mcd_core_st *core, uint32_t trig_id, mc
 	\c MCD_ERR_NONE              if successful.\n
 	\c MCD_ERR_TRIG_ACCESS       if trigger set could not be activated.
 */
-mcd_return_et mcd_activate_trig_set_f(const mcd_core_st *core);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_activate_trig_set_f(const mcd_core_st *core);
 
 
 /** \brief Function allowing a user to delete a trigger set.
@@ -2526,7 +2535,7 @@ mcd_return_et mcd_activate_trig_set_f(const mcd_core_st *core);
 	\c MCD_ERR_NONE              if successful.\n
 	\c MCD_ERR_TRIG_ACCESS       if trigger set could not be removed.
 */
-mcd_return_et mcd_remove_trig_set_f(const mcd_core_st *core);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_remove_trig_set_f(const mcd_core_st *core);
 
 
 /** \brief Function querying the contents of a trigger set.
@@ -2552,7 +2561,7 @@ mcd_return_et mcd_remove_trig_set_f(const mcd_core_st *core);
 	\c MCD_ERR_NONE              if successful.\n
 	\c MCD_ERR_TRIG_ACCESS       if trigger set could not be queried.
 */
-mcd_return_et mcd_qry_trig_set_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_trigs, uint32_t * trig_ids);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_trig_set_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_trigs, uint32_t * trig_ids);
 
 
 /** \brief Function querying the state of a trigger set.
@@ -2571,7 +2580,7 @@ mcd_return_et mcd_qry_trig_set_f(const mcd_core_st *core, uint32_t start_index, 
 	\c MCD_ERR_NONE              if successful.\n
 	\c MCD_ERR_TRIG_ACCESS       if state of the trigger set could not be queried.
 */
-mcd_return_et mcd_qry_trig_set_state_f(const mcd_core_st *core, mcd_trig_set_state_st *trig_state);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_trig_set_state_f(const mcd_core_st *core, mcd_trig_set_state_st *trig_state);
 
 
 /*@} END: MCDTrigSetupAPI */
@@ -2610,7 +2619,7 @@ The API also allows execution of commands grouped as transaction lists.
 	\c MCD_ERR_TXLIST_WRITE   if execution of the transaction list aborted due to a specific write access.\n
 	\c MCD_ERR_TXLIST_TX      if execution of the transaction list aborted due to any other reason.
 */
-mcd_return_et mcd_execute_txlist_f(const mcd_core_st *core, mcd_txlist_st *txlist);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_execute_txlist_f(const mcd_core_st *core, mcd_txlist_st *txlist);
 
 
 /** \brief Function starting execution on a particular core.
@@ -2628,7 +2637,7 @@ mcd_return_et mcd_execute_txlist_f(const mcd_core_st *core, mcd_txlist_st *txlis
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if starting execution failed.
 */
-mcd_return_et mcd_run_f(const mcd_core_st *core, mcd_bool_t global);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_run_f(const mcd_core_st *core, mcd_bool_t global);
 
 
 /** \brief Function stopping execution on a particular core.
@@ -2646,7 +2655,7 @@ mcd_return_et mcd_run_f(const mcd_core_st *core, mcd_bool_t global);
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if stopping execution failed.
 */
-mcd_return_et mcd_stop_f(const mcd_core_st *core, mcd_bool_t global);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_stop_f(const mcd_core_st *core, mcd_bool_t global);
 
 
 /** \brief Function running a particular core until a defined time.
@@ -2675,7 +2684,7 @@ mcd_return_et mcd_stop_f(const mcd_core_st *core, mcd_bool_t global);
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if execution failed.
 */
-mcd_return_et mcd_run_until_f(const mcd_core_st *core, mcd_bool_t global, mcd_bool_t absolute_time, uint64_t run_until_time);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_run_until_f(const mcd_core_st *core, mcd_bool_t global, mcd_bool_t absolute_time, uint64_t run_until_time);
 
 
 /** \brief Function querying the current time of execution from the target system.
@@ -2692,7 +2701,7 @@ mcd_return_et mcd_run_until_f(const mcd_core_st *core, mcd_bool_t global, mcd_bo
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if querying for the time failed.
 */
-mcd_return_et mcd_qry_current_time_f(const mcd_core_st *core, uint64_t *current_time);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_current_time_f(const mcd_core_st *core, uint64_t *current_time);
 
 
 /** \brief Function stepping a target core based on the particular step type.
@@ -2716,7 +2725,7 @@ mcd_return_et mcd_qry_current_time_f(const mcd_core_st *core, uint64_t *current_
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if stepping the target core failed.
 */
-mcd_return_et mcd_step_f(const mcd_core_st *core, mcd_bool_t global, mcd_core_step_type_et step_type, uint32_t n_steps);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_step_f(const mcd_core_st *core, mcd_bool_t global, mcd_core_step_type_et step_type, uint32_t n_steps);
 
 
 /** \brief Function enabling/disabling global stop and run activities on this core
@@ -2734,7 +2743,7 @@ mcd_return_et mcd_step_f(const mcd_core_st *core, mcd_bool_t global, mcd_core_st
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if enabling/disabling the global effect of execution functions failed.
 */
-mcd_return_et mcd_set_global_f(const mcd_core_st *core, mcd_bool_t enable);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_set_global_f(const mcd_core_st *core, mcd_bool_t enable);
 
 
 /** \brief Function querying the execution state of a target core.
@@ -2750,7 +2759,7 @@ mcd_return_et mcd_set_global_f(const mcd_core_st *core, mcd_bool_t enable);
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if querying the execution state failed.
 */
-mcd_return_et mcd_qry_state_f(const mcd_core_st *core, mcd_core_state_st *state);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_state_f(const mcd_core_st *core, mcd_core_state_st *state);
 
 
 /** \brief Function executing a command on the target platform.
@@ -2769,7 +2778,7 @@ mcd_return_et mcd_qry_state_f(const mcd_core_st *core, mcd_core_state_st *state)
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if executing the command failed.
 */
-mcd_return_et mcd_execute_command_f(const mcd_core_st *core, const mcd_char_t * command_string, uint32_t result_string_size, mcd_char_t * result_string);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_execute_command_f(const mcd_core_st *core, const mcd_char_t * command_string, uint32_t result_string_size, mcd_char_t * result_string);
 
 
 /*@} END: MCDExeControlAPI */
@@ -2801,7 +2810,7 @@ or more reset signals in parallel on the target system.
 	\c MCD_ERR_NONE      if successful.\n
 	\c MCD_ERR_GENERAL   if querying the reset classes failed.
 */
-mcd_return_et mcd_qry_rst_classes_f(const mcd_core_st *core, uint32_t *rst_class_vector);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_rst_classes_f(const mcd_core_st *core, uint32_t *rst_class_vector);
 
 
 /** \brief Function querying information about a particular reset class supported by the target system
@@ -2822,7 +2831,7 @@ mcd_return_et mcd_qry_rst_classes_f(const mcd_core_st *core, uint32_t *rst_class
 	\c MCD_ERR_PARAM     if reset class does not exist.\n
 	\c MCD_ERR_GENERAL   if any other error occurred.
 */
-mcd_return_et mcd_qry_rst_class_info_f(const mcd_core_st *core, uint8_t rst_class, mcd_rst_info_st *rst_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_rst_class_info_f(const mcd_core_st *core, uint8_t rst_class, mcd_rst_info_st *rst_info);
 
 
 /** \brief Function triggering one or more reset signals in parallel on the target system.
@@ -2841,7 +2850,7 @@ mcd_return_et mcd_qry_rst_class_info_f(const mcd_core_st *core, uint8_t rst_clas
 	\c MCD_ERR_PARAM     if one or several reset classes do not exist.\n
 	\c MCD_ERR_GENERAL   if any other error occurred.
 */
-mcd_return_et mcd_rst_f(const mcd_core_st *core, uint32_t rst_class_vector, mcd_bool_t rst_and_halt);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_rst_f(const mcd_core_st *core, uint32_t rst_class_vector, mcd_bool_t rst_and_halt);
 
 
 /*@} END: MCDResetControlAPI */
@@ -2894,7 +2903,7 @@ mcd_return_et mcd_rst_f(const mcd_core_st *core, uint32_t rst_class_vector, mcd_
 	\c MCD_ERR_CHL_SETUP                 if channel setup is invalid or contains unsupported attributes.
 
 */
-mcd_return_et mcd_chl_open_f(const mcd_core_st *core, mcd_chl_st *channel);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_chl_open_f(const mcd_core_st *core, mcd_chl_st *channel);
 
 
 /** \brief Function send a message using a specified communication channel.
@@ -2915,7 +2924,7 @@ mcd_return_et mcd_chl_open_f(const mcd_core_st *core, mcd_chl_st *channel);
 	\c MCD_ERR_NONE                if successful.\n
 	\c MCD_ERR_CHL_MESSAGE_FAILED  if sending the message failed.
 */
-mcd_return_et mcd_send_msg_f(const mcd_core_st *core, const mcd_chl_st *channel, uint32_t msg_len, const uint8_t *msg);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_send_msg_f(const mcd_core_st *core, const mcd_chl_st *channel, uint32_t msg_len, const uint8_t *msg);
 
 
 /** \brief Function receiving a message using a specified communication channel.
@@ -2938,7 +2947,7 @@ mcd_return_et mcd_send_msg_f(const mcd_core_st *core, const mcd_chl_st *channel,
 	\c MCD_ERR_NONE                if successful.\n
 	\c MCD_ERR_CHL_MESSAGE_FAILED  if receiving of the message failed.
 */
-mcd_return_et mcd_receive_msg_f(const mcd_core_st *core, const mcd_chl_st *channel, uint32_t timeout, uint32_t *msg_len, uint8_t *msg);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_receive_msg_f(const mcd_core_st *core, const mcd_chl_st *channel, uint32_t timeout, uint32_t *msg_len, uint8_t *msg);
 
 
 /** \brief Function resetting a specified communication channel.
@@ -2957,7 +2966,7 @@ mcd_return_et mcd_receive_msg_f(const mcd_core_st *core, const mcd_chl_st *chann
 	\c MCD_ERR_NONE       if successful.\n
 	\c MCD_ERR_GENERAL    if resetting the communication channel failed.
 */
-mcd_return_et mcd_chl_reset_f(const mcd_core_st *core, const mcd_chl_st *channel);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_chl_reset_f(const mcd_core_st *core, const mcd_chl_st *channel);
 
 
 /** \brief Function closing a specified communication channel.
@@ -2975,7 +2984,7 @@ mcd_return_et mcd_chl_reset_f(const mcd_core_st *core, const mcd_chl_st *channel
 	\c MCD_ERR_NONE       if successful.\n
 	\c MCD_ERR_GENERAL    if closing the communication channel failed.
 */
-mcd_return_et mcd_chl_close_f(const mcd_core_st *core, const mcd_chl_st *channel);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_chl_close_f(const mcd_core_st *core, const mcd_chl_st *channel);
 
 
 /*@} END: MCDCommunicationChannelAPI */
@@ -3015,7 +3024,7 @@ mcd_return_et mcd_chl_close_f(const mcd_core_st *core, const mcd_chl_st *channel
 	\c MCD_ERR_PARAM      if \c trace_index is equal or larger than the number of traces.\n
 	\c MCD_ERR_GENERAL    on any other error.
 */
-mcd_return_et mcd_qry_traces_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_traces, mcd_trace_info_st *trace_info);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_traces_f(const mcd_core_st *core, uint32_t start_index, uint32_t *num_traces, mcd_trace_info_st *trace_info);
 
 
 /** \brief Function querying the status of a trace.
@@ -3033,7 +3042,7 @@ mcd_return_et mcd_qry_traces_f(const mcd_core_st *core, uint32_t start_index, ui
 	\c MCD_ERR_PARAM      if \c trace_id is not a valid trace ID.\n
 	\c MCD_ERR_GENERAL    on any other error.
 */
-mcd_return_et mcd_qry_trace_state_f(const mcd_core_st *core, uint32_t trace_id, mcd_trace_state_st *state);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_qry_trace_state_f(const mcd_core_st *core, uint32_t trace_id, mcd_trace_state_st *state);
 
 
 /** \brief Function setting the state and mode of a trace.
@@ -3053,7 +3062,7 @@ mcd_return_et mcd_qry_trace_state_f(const mcd_core_st *core, uint32_t trace_id, 
 	\c MCD_ERR_PARAM      if \c trace_id is not a valid trace ID.\n
 	\c MCD_ERR_GENERAL    on any other error.
 */
-mcd_return_et mcd_set_trace_state_f(const mcd_core_st *core, uint32_t trace_id, mcd_trace_state_st *state);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_set_trace_state_f(const mcd_core_st *core, uint32_t trace_id, mcd_trace_state_st *state);
 
 
 /** \brief Function reading trace data from a trace.
@@ -3086,7 +3095,7 @@ mcd_return_et mcd_set_trace_state_f(const mcd_core_st *core, uint32_t trace_id, 
 		  than the number of available trace frames.\n
 	\c MCD_ERR_GENERAL    on any other error.
 */
-mcd_return_et mcd_read_trace_f(const mcd_core_st *core, uint32_t trace_id, uint64_t start_index, uint32_t *num_frames, uint32_t trace_data_size, void *trace_data);
+extern "C" MCD_SHARED_LIBRARY_API mcd_return_et mcd_read_trace_f(const mcd_core_st *core, uint32_t trace_id, uint64_t start_index, uint32_t *num_frames, uint32_t trace_data_size, void *trace_data);
 
 
 /*@} END: MCDTraceAPI */
