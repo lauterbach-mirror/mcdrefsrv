@@ -22,12 +22,12 @@ def main():
     if operating_system == 'Linux':
         # executing from wsl
         path_to_home = pathlib.Path('<wsl_home_directory>')
-        path_to_shared_library = path_to_home.joinpath(workspace, 'out/build/linux-default/mcd_shared_library/libmcd_shared_library.so')
+        path_to_shared_library = path_to_home.joinpath(workspace, 'build/linux-default/src/libmcd_shared_library.so')
         system_path = '<wsl_path_to_t32_installation>'
     elif operating_system == 'Windows':
         # executing from main windows machine
         path_to_home = pathlib.Path('<windows_home_directory')
-        path_to_shared_library = path_to_home.joinpath(workspace, 'out/build/windows-default/mcd_shared_library/mcd_shared_library.dll')
+        path_to_shared_library = path_to_home.joinpath(workspace, 'build/windows-default/src/Debug/mcd_shared_library.dll')
         system_path = '<windows_path_to_t32_installation>'
     else:
         raise ValueError(f'The operating system {operating_system} is not supported')

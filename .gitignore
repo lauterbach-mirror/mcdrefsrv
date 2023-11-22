@@ -1,9 +1,8 @@
 # files for visual studio (code)
-.vs
 .vscode
 
 # output
-out
+build
 
 # mcd api header
 src/mcd_api.h
