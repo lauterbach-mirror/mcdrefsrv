@@ -3,3 +3,8 @@
 
 # output
 build
+
+# python caches
+tests/__pycache__/
+tests/internals/__pycache__/
+tests/internals/mcdapi/__pycache__/
