@@ -653,7 +653,7 @@ void Core::store_reg_info(MCDServer &i_server) {
         /* store the current data packet */
         std::map<std::string, std::string> reg_data;
         deconstruct_input_string(&line_buffer[pos1+1], reg_data, 0);
-        /* check weather we want to access the register by ID or by OPCODE */
+        /* check whether we want to access the register by ID or by OPCODE */
         std::string regname = reg_data.at(TCP_ARGUMENT_NAME);
         /* qemu uses lowercase names for registers, TRACE32 uses upper case */
         for (int i = 0; i < regname.length(); i++) {
@@ -733,7 +733,7 @@ uint32_t Core::get_num_trigger() {
 
 void Core::qry_get_register_data(uint32_t i_start_index, uint32_t i_num_regs, mcd_register_info_st *i_reg_info) {
     uint32_t current_parse_index = i_start_index;
-    uint32_t current_store_index = i_start_index;
+    uint32_t current_store_index = 0;
     uint32_t regs_still_to_parse = i_num_regs;
     for (auto const& x : this->reg_groups) {
         RegGroup reg_group = x.second;
@@ -742,12 +742,13 @@ void Core::qry_get_register_data(uint32_t i_start_index, uint32_t i_num_regs, mc
             current_parse_index = current_parse_index - num_registers;
         }
         else {
-            if (regs_still_to_parse < num_registers) {
+            uint32_t max_parse_index = current_parse_index + (regs_still_to_parse - 1); /* regs_still_to_parse includes the current index */
+            if (max_parse_index < num_registers) {
                 reg_group.qry_get_register_data(current_parse_index, regs_still_to_parse, &i_reg_info[current_store_index]);
                 return;
             }
             else {
-                reg_group.qry_get_register_data(current_parse_index, num_registers, &i_reg_info[current_store_index]);
+                reg_group.qry_get_register_data(current_parse_index, num_registers - current_parse_index, &i_reg_info[current_store_index]);
                 regs_still_to_parse = regs_still_to_parse - (num_registers - current_parse_index);
                 current_store_index = current_store_index + (num_registers - current_parse_index);
                 current_parse_index = 0;
@@ -1008,8 +1009,8 @@ void RegGroup::add_register(mcd_register_info_st i_register) {
 
 void RegGroup::qry_get_register_data(uint32_t i_start_index, uint32_t i_num_regs, mcd_register_info_st *i_reg_info) {
     /* returns all regs from the reg group */
-    for (int i = i_start_index; i<i_num_regs; i++) {
-        i_reg_info[i] = this->registers.at(i);
+    for (int i = i_start_index; i < (i_num_regs + i_start_index); i++) {
+        i_reg_info[i - i_start_index] = this->registers.at(i);
     }
 }
 
@@ -1097,15 +1098,14 @@ mcd_return_et mcd_qry_systems_f(uint32_t i_start_index, uint32_t* i_num_systems,
         return MCD_ERR_NONE;
     }
 
-    for (uint32_t current_index = 0; current_index < *i_num_systems;current_index++) {
-        /* get correct strut and system */
+    for (uint32_t current_index = 0; current_index < *i_num_systems; current_index++) {
+        /* get correct struct and system */
         System *system = g_mcd_server->get_system(i_start_index + current_index);
         mcd_core_con_info_st *ptr_to_current_st = &i_system_con_info[current_index];
 
         /* get new data from the system */
         system->get_qry_info(ptr_to_current_st);
     }
-
     return MCD_ERR_NONE;
 }
 
@@ -1120,11 +1120,11 @@ mcd_return_et mcd_qry_devices_f(const mcd_core_con_info_st *i_system_con_info, u
 
     /* output data */
     for (uint32_t current_index = 0; current_index < *i_num_devices;current_index++) {
-        /* get correct strut and device */
+        /* get correct struct and device */
         mcd_core_con_info_st *ptr_to_current_st = &i_device_con_info[current_index];
         Device *device = main_system->get_device(i_start_index + current_index);
 
-        /* copy provided data */
+        /* copy provided data (system) */
         strncpy(ptr_to_current_st->system_key, i_system_con_info->system_key, MCD_KEY_LEN);
         strncpy(ptr_to_current_st->system, i_system_con_info->system, MCD_UNIQUE_NAME_LEN);
         strncpy(ptr_to_current_st->system_instance, i_system_con_info->system_instance, MCD_UNIQUE_NAME_LEN);
@@ -1132,7 +1132,6 @@ mcd_return_et mcd_qry_devices_f(const mcd_core_con_info_st *i_system_con_info, u
         /* get new data from the device */
         device->get_qry_info(ptr_to_current_st);
     }
-
     return MCD_ERR_NONE;
 }
 
@@ -1167,7 +1166,6 @@ mcd_return_et mcd_qry_cores_f(const mcd_core_con_info_st *i_connection_info, uin
         /* get new data from the core */
         core->get_qry_info(ptr_to_current_st);
     }
-    
     return MCD_ERR_NONE;
 }
 
