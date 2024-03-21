@@ -48,6 +48,7 @@ SOFTWARE.
 #define ISVALIDSOCKET(s) ((s) != INVALID_SOCKET)
 #define CLOSESOCKET(s) closesocket(s)
 #define GETSOCKETERRNO() (WSAGetLastError())
+#define SHUTDOWN_ALL SD_BOTH
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -60,6 +61,7 @@ SOFTWARE.
 #define ISVALIDSOCKET(s) ((s) >= 0)
 #define CLOSESOCKET(s) close(s)
 #define GETSOCKETERRNO() (errno)
+#define SHUTDOWN_ALL SHUT_RDWR
 #endif
 
 /* start defines */

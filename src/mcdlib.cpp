@@ -86,7 +86,9 @@ int MCDServer::tcp_connect() {
 }
 
 void MCDServer::tcp_close_socket() {
+    shutdown(this->socket_fd, SHUTDOWN_ALL);
     CLOSESOCKET(this->socket_fd);
+    this->socket_fd = 0;
 #if defined(WIN32)
     WSACleanup();
 #endif
@@ -98,8 +100,6 @@ void MCDServer::detach() {
     snprintf(buffer, MCD_TCP_DATALEN, "%c", TCP_CHAR_CLOSE_SERVER);
     this->put_packet(buffer);
     this->handle_receiving(true);
-    /* 2. reset socket */
-    this->socket_fd = 0;
 }
 
 void MCDServer::put_packet(char *i_buffer) {
