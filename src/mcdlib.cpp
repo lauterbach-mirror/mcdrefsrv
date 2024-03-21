@@ -246,7 +246,7 @@ int MCDServer::initialize_handshake() {
 void MCDServer::store_device_cores(System *i_system) {
     /* 1. get info from qemu */
     std::map<std::string, std::string> device_core_data;
-    deconstruct_input_string(this->line_buf, device_core_data, 0);
+    deconstruct_tcp_data(this->line_buf, device_core_data, 0);
     std::string device_name = device_core_data.at(TCP_ARGUMENT_DEVICE);
     /* 2. create device */
     std::unique_ptr<Device> device = std::make_unique<Device>(STRING_TO_CHAR(mcd_ipv4), STRING_TO_INT(port), STRING_TO_CHAR(device_name), 0);
@@ -443,7 +443,7 @@ int Core::get_qry_state(MCDServer& i_server, mcd_core_state_st* i_state) {
 
     /* 2. process response */
     std::map<std::string, std::string> state_data;
-    deconstruct_input_string(line_buffer, state_data, 0);
+    deconstruct_tcp_data(line_buffer, state_data, 0);
     std::string state_str = state_data.at(TCP_ARGUMENT_STATE);
     if (state_str == CORE_STATE_RUNNING) {
         i_state->state = MCD_CORE_STATE_RUNNING;
@@ -485,7 +485,7 @@ void Core::store_reset_data(MCDServer &i_server) {
         pos1 = i_buffer_str.find(QUERY_END_INDEX, 0);
         /* store the current data packet */
         std::map<std::string, std::string> reset_data;
-        deconstruct_input_string(&line_buffer[pos1+1], reset_data, 0);
+        deconstruct_tcp_data(&line_buffer[pos1+1], reset_data, 0);
         /* store data */
         uint32_t reset_id = atouint32_t(reset_data.at(TCP_ARGUMENT_ID));
         std::string reset_name = reset_data.at(TCP_ARGUMENT_NAME);
@@ -514,7 +514,7 @@ void Core::store_trigger_info(MCDServer &i_server) {
     i_server.handle_receiving(false);
     /* 2. pocess data */
     std::map<std::string, std::string> trigger_data;
-    deconstruct_input_string(line_buffer, trigger_data, 0);
+    deconstruct_tcp_data(line_buffer, trigger_data, 0);
     std::string type_data = trigger_data.at(TCP_ARGUMENT_TYPE);
     mcd_trig_type_et type = 0;
     if (type_data.find(my_to_string(MCD_BREAKPOINT_HW)) != std::string::npos) {
@@ -564,7 +564,7 @@ void Core::store_mem_space_info(MCDServer &i_server) {
         pos1 = i_buffer_str.find(QUERY_END_INDEX, 0);
         /* store the current data packet */
         std::map<std::string, std::string> mem_space_data;
-        deconstruct_input_string(&line_buffer[pos1+1], mem_space_data, 0);
+        deconstruct_tcp_data(&line_buffer[pos1+1], mem_space_data, 0);
         /* store data */
         uint32_t mem_space_id = atouint32_t(mem_space_data.at(TCP_ARGUMENT_ID));
         std::string mem_space_name = mem_space_data.at(TCP_ARGUMENT_NAME);
@@ -619,7 +619,7 @@ void Core::store_reg_group_info(MCDServer &i_server) {
         pos1 = i_buffer_str.find(QUERY_END_INDEX, 0);
         /* store the current data packet */
         std::map<std::string, std::string> reg_group_data;
-        deconstruct_input_string(&line_buffer[pos1+1], reg_group_data, 0);
+        deconstruct_tcp_data(&line_buffer[pos1+1], reg_group_data, 0);
         uint32_t group_id = atouint32_t(reg_group_data.at(TCP_ARGUMENT_ID));
         std::string group_name = reg_group_data.at(TCP_ARGUMENT_NAME);
         RegGroup reg_group = RegGroup(group_name, group_id);
@@ -652,7 +652,7 @@ void Core::store_reg_info(MCDServer &i_server) {
         pos1 = i_buffer_str.find(QUERY_END_INDEX, 0);
         /* store the current data packet */
         std::map<std::string, std::string> reg_data;
-        deconstruct_input_string(&line_buffer[pos1+1], reg_data, 0);
+        deconstruct_tcp_data(&line_buffer[pos1+1], reg_data, 0);
         /* check whether we want to access the register by ID or by OPCODE */
         std::string regname = reg_data.at(TCP_ARGUMENT_NAME);
         /* qemu uses lowercase names for registers, TRACE32 uses upper case */
@@ -662,7 +662,7 @@ void Core::store_reg_info(MCDServer &i_server) {
         uint32_t reg_id = atouint64_t(reg_data.at(TCP_ARGUMENT_ID));
         uint32_t mem_space_id = 0;
         uint32_t opcode = atouint32_t(reg_data.at(TCP_ARGUMENT_OPCODE));
-        if (get_reg_access_type(regname) && opcode) {
+        if (arm_get_reg_access_type(regname) && opcode) {
             mem_space_id = this->opcode_memspace_id;
             /* store opcode */
             this->opcode_lookup.insert({opcode, reg_id});
@@ -1024,8 +1024,8 @@ mcd_return_et mcd_open_server_f(const mcd_char_t* i_system_key, const mcd_char_t
     std::string mcd_server_port;
     std::string mcd_ipv4_arg = CONFIG_STR_ARG_HOST;
     std::string mcd_server_port_arg = CONFIG_STR_ARG_PORT;
-    extract_argument_from_string(i_config_string, &mcd_ipv4, mcd_ipv4_arg, MCD_DEFAULT_IPV4);
-    extract_argument_from_string(i_config_string, &mcd_server_port, mcd_server_port_arg, MCD_DEFAULT_TCP_PORT);
+    extract_argument_from_config_string(i_config_string, &mcd_ipv4, mcd_ipv4_arg, MCD_DEFAULT_IPV4);
+    extract_argument_from_config_string(i_config_string, &mcd_server_port, mcd_server_port_arg, MCD_DEFAULT_TCP_PORT);
     /* check if localhost was passed as argument */
     if (mcd_ipv4.compare(MCD_LOCALHOST_STR)==0) {
         mcd_ipv4 = MCD_DEFAULT_IPV4;

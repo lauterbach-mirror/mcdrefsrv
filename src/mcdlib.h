@@ -270,7 +270,7 @@ public:
 	 * Each register is requested with a separate packet.
 	 * Then it stores them into the correct \ref RegGroup.
 	 * While doing this it converts the register name to all uppercase, because thats how TRACE32 expects them.
-	 * It also checks whether the register will be accassed by ID or by opcode with the \ref get_reg_access_type function.
+	 * It also checks whether the register will be accassed by ID or by opcode with the \ref arm_get_reg_access_type function.
 	 * If the register gets accessed by opcode, the opcode and original ID of the register are stored in the opcode_lookup map.
 	 * @param[in] i_server MCDServer for TCP connection.
 	 */
@@ -746,7 +746,7 @@ All helper functions, which are used thoughout the library.
  * @{ */
 
 /**
- * \brief Extracts the arguments from the config_string.
+ * \brief Extracts an argument from the config_string.
  * 
  * The config_string can be set by the user with the "SYStem.MCDconfig config_string" command in TRACE32.
  * It can include an IP address called MCDHostName and a port called McdServerPort.
@@ -759,7 +759,7 @@ All helper functions, which are used thoughout the library.
  * @param[in] i_default_value The default value, which gets returned in case the argument was not in the config_string.
  */
 
-void extract_argument_from_string(const std::string& i_config_string, std::string *i_output, std::string i_lookup, std::string i_default_value);
+void extract_argument_from_config_string(const std::string& i_config_string, std::string *i_output, std::string i_lookup, std::string i_default_value);
 
 /**
  * \brief Extracts all arguments and values from a TCP string received from the mcdstub.
@@ -770,7 +770,7 @@ void extract_argument_from_string(const std::string& i_config_string, std::strin
  * @param[in] i_level The level selects the separating characters used for parsin.
  */
 
-void deconstruct_input_string(const std::string i_origin, std::map<std::string, std::string> & i_argument_map, const int i_level = 0);
+void deconstruct_tcp_data(const std::string i_origin, std::map<std::string, std::string> & i_argument_map, const int i_level = 0);
 
 /**
  * \brief Converts a hex string into an integer byte array.
@@ -846,7 +846,7 @@ int trigger_to_qemu_breakpoint(uint32_t i_type);
  * @param[in] i_regname The register to check.
  */
 
-int get_reg_access_type(std::string i_regname);
+int arm_get_reg_access_type(std::string i_regname);
 
 /**
  * \brief Converts an integer to a string.

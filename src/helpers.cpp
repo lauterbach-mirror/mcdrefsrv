@@ -32,7 +32,7 @@ SOFTWARE.
 #include <set>
 #include <sstream>
 
-void extract_argument_from_string(const std::string& i_config_string, std::string *i_output, std::string i_lookup, std::string i_default_value) {
+void extract_argument_from_config_string(const std::string& i_config_string, std::string *i_output, std::string i_lookup, std::string i_default_value) {
 
     i_lookup = i_lookup + "=";
 
@@ -50,7 +50,7 @@ void extract_argument_from_string(const std::string& i_config_string, std::strin
     *i_output = i_default_value;
 }
 
-void deconstruct_input_string(const std::string i_origin, std::map<std::string, std::string> & i_argument_map, const int i_level) {
+void deconstruct_tcp_data(const std::string i_origin, std::map<std::string, std::string> & i_argument_map, const int i_level) {
     std::string allocator;
     std::string arg_end;
     /* select separation characters */
@@ -271,7 +271,7 @@ std::set<std::string> ca15_id_regs {
 	"HSCTLR",
 };
 
-int get_reg_access_type(std::string i_regname) {
+int arm_get_reg_access_type(std::string i_regname) {
     if (ca15_id_regs.find(i_regname) != ca15_id_regs.end()) {
         return 0;
     }
