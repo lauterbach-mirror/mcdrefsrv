@@ -3,8 +3,10 @@
 
 # output
 build
+tests/logs/*
+!tests/logs/.gitkeep
 
 # python caches
-tests/__pycache__/
-tests/internals/__pycache__/
-tests/internals/mcdapi/__pycache__/
+__pycache__/
+*.egg-info/
+.pytest_cache/

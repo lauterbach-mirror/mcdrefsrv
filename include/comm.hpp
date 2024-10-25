@@ -1,0 +1,138 @@
+/*
+MIT License
+
+Copyright (c) 2024 Lauterbach GmbH
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+#pragma once
+
+#include <string>
+
+#include "mcd_api.h"
+#include "mcd_rpc.h"
+
+#if defined(WIN32)
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "Ws2_32.lib")
+#define ISVALIDSOCKET(s) ((s) != INVALID_SOCKET)
+#define CLOSESOCKET(s) closesocket(s)
+#define GETSOCKETERRNO() (WSAGetLastError())
+#define SHUTDOWN_ALL SD_BOTH
+#else
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#define SOCKET int
+#define ISVALIDSOCKET(s) ((s) >= 0)
+#define CLOSESOCKET(s) close(s)
+#define GETSOCKETERRNO() (errno)
+#define SHUTDOWN_ALL SHUT_RDWR
+#define SOCKET_ERROR (-1)
+#endif
+
+#define LOCALHOST "127.0.0.1"
+#define MCD_DEFAULT_TCP_PORT 1235
+
+/**
+ * \brief Custom MCD exception type with error info encoded as
+ * \c mcd_error_info_st.
+ */
+struct mcd_exception : public std::exception {
+    const mcd_error_info_st error_info;
+    mcd_exception(const mcd_error_info_st &error_info);
+    const char *what();
+};
+
+/** \brief Provides a communication channel with the MCD server.
+ */
+class MCDServer
+{
+#if defined(WIN32)
+    static int winsock_connections;
+#endif
+    MCDServer(const std::string &host, int port);
+    mcd_return_et connect_to_target(mcd_error_info_st &error);
+    std::string host;
+    int port;
+    SOCKET socket_fd;
+    bool connected;
+    uint8_t buf[MCD_MAX_PACKET_LENGTH];
+
+public:
+    uint32_t server_uid;
+    uint8_t *const msg_buf;
+
+    /**
+     * \brief Initializes a new TCP connection to a MCD server.
+     *
+     * @throws \c mcd_exception
+     *
+     * @param host Host name of the server socket.
+     * @param port TCP port number of the server socket.
+     */
+    static MCDServer Open(const std::string &host, int port);
+
+    /**
+     * \brief Sends a request to the MCD server.
+     *
+     * When the method is called, the request is expected to be at the
+     * beginning of msg_buf.
+     *
+     * @throws \c mcd_exception
+     *
+     * @param request_size Request size in bytes.
+     * @param error Error information in case of failure.
+     *
+     * @returns Return code as defined in MCD API.
+     */
+    mcd_return_et request(uint32_t request_size, mcd_error_info_st &error);
+
+    /**
+     * \brief Sends a request to the MCD server and awaits a response.
+     *
+     * When the method is called, the request is expected to be at the
+     * beginning of msg_buf.
+     * After the method returns, the request will be overriden.
+     * On success, the response will then be at the beginning of msg_buf.
+     *
+     * @param request_size Request size in bytes.
+     * @param error Error information in case of failure.
+     *
+     * @returns Return code as defined in MCD API.
+     */
+    mcd_return_et request_response(uint32_t request_size,
+                                   mcd_error_info_st &error);
+
+    MCDServer(MCDServer &) = delete;
+    MCDServer &operator=(MCDServer &other) = delete;
+    MCDServer(MCDServer &&);
+    MCDServer &operator=(MCDServer &&other);
+
+    /**
+     * \brief Closes the TCP connection.
+     */
+    ~MCDServer();
+};

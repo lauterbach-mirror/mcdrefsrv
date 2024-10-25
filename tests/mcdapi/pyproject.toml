@@ -1,0 +1,9 @@
+[project]
+name = "mcd_api"
+version = "1.1"
+authors = [
+  { name="Mario Fleischmann", email="mario.fleischmann@lauterbach.com" },
+]
+description = "ctypes wrapper for MCD"
+[project.urls]
+Homepage = "https://git.intern.lauterbach.com/cboenig/mcdrefsrv_ltb"

@@ -1,0 +1,8 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+BreakBeforeBraces: Linux
+IndentWidth: 4
+UseTab: Never
+ColumnLimit: 80
+AccessModifierOffset: -4
