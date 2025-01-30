@@ -125,19 +125,49 @@ MCDServer MCDServer::Open(const std::string &host, int port)
 
 mcd_return_et MCDServer::connect_to_target(mcd_error_info_st &error)
 {
-    struct sockaddr_in server_address {
-        .sin_family{AF_INET}, .sin_port{htons((u_short)this->port)},
+    struct addrinfo *servinfo, *a;
+    struct addrinfo hints{
+        .ai_family{AF_UNSPEC},
+        .ai_socktype{SOCK_STREAM},
     };
-    inet_pton(AF_INET, this->host.c_str(), &server_address.sin_addr.s_addr);
 
-    if (connect(this->socket_fd, (struct sockaddr *)&server_address,
-                sizeof(server_address)) != 0) {
+    std::string port_s{std::to_string(this->port)};
+    int gai_ret{getaddrinfo(this->host.c_str(),
+                            port_s.c_str(),
+                            &hints,
+                            &servinfo)};
+    if (gai_ret != 0) {
         error = {
             .return_status{MCD_RET_ACT_HANDLE_ERROR},
             .error_code{MCD_ERR_CONNECTION},
             .error_events{MCD_ERR_EVT_NONE},
-            .error_str{"TCP connection failed"},
+            .error_str{""},
         };
+        snprintf(error.error_str, MCD_INFO_STR_LEN,
+                 "TCP connection failed (%s)", gai_strerror(gai_ret));
+        return error.return_status;
+    }
+
+    for (a = servinfo; a; a = a->ai_next)
+    {
+        if (connect(this->socket_fd, a->ai_addr, (int)a->ai_addrlen) != 0) {
+            error = {
+                .return_status{MCD_RET_ACT_HANDLE_ERROR},
+                .error_code{MCD_ERR_CONNECTION},
+                .error_events{MCD_ERR_EVT_NONE},
+                .error_str{},
+            };
+            snprintf(error.error_str, MCD_INFO_STR_LEN,
+                    "TCP connection failed (%d)", GETSOCKETERRNO());
+            continue;
+        }
+        break;
+    }
+
+    freeaddrinfo(servinfo);
+
+    if (!a) {
+        /* failed to connect */
         return error.return_status;
     }
 
