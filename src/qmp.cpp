@@ -853,7 +853,7 @@ mcd_return_et unmarshal_mcd_open_server_result(char const *buf,
         }
         std::string_view line{json_line, len};
         try {
-            nlohmann::json response{nlohmann::json::parse(line)};
+            nlohmann::json response = nlohmann::json::parse(line);
             response.at("return").get_to(*res);
             return MCD_RET_ACT_NONE;
         } catch (const std::exception &) {
@@ -887,7 +887,7 @@ mcd_return_et unmarshal_mcd_open_server_result(char const *buf,
             }                                                                  \
             std::string_view line{json_line, len};                             \
             try {                                                              \
-                nlohmann::json response{nlohmann::json::parse(line)};          \
+                nlohmann::json response = nlohmann::json::parse(line);         \
                 response.at("return").get_to(*res);                            \
                 return MCD_RET_ACT_NONE;                                       \
             } catch (const std::exception &) {                                 \
