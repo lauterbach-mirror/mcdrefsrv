@@ -16,20 +16,28 @@ Client                              Server
      |                               |
 ```
 
-The client stub supports a custom serial protocol layer which is defined in `mcd_rpc.h` with the intention to be kept as thin as possible.
+### QEMU Machine Protocol (QMP)
+
+> MCD support for QEMU is currently in development.
+
+The client stub supports QEMU's JSON-based [QMP](https://wiki.qemu.org/Documentation/QMP) protocol.
+
+### Custom Serial Protocol Layer
+
+The client stub supports a custom serial protocol layer with the intention to be kept as thin as possible.
 
 **Request Packet**:
 
 ```text
-      1 Byte               0 - 64KiB
-[ MCD Function ID ] [ Marshalled Arguments ]
+      1 Byte            1 Byte               0 - 64KiB
+[ Packet Length ] [ MCD Function ID ] [ Marshalled Arguments ]
 ```
 
 **Response Packet**:
 
 ```text
-         0 - 64KiB
-[ Marshalled Return Values ]
+      1 Byte               0 - 64KiB
+[ Packet Length ] [ Marshalled Return Values ]
 ```
 
 ## Adapter between Client and Server

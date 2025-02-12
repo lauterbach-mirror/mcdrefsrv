@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2024 Lauterbach GmbH
+Copyright (c) 2025 Lauterbach GmbH
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,7 @@ SOFTWARE.
 
 #define LOCALHOST "127.0.0.1"
 #define MCD_DEFAULT_TCP_PORT 1235
+#define MCD_MAX_PACKET_LENGTH 65535
 
 /**
  * \brief Custom MCD exception type with error info encoded as
@@ -79,11 +80,11 @@ class MCDServer
     int port;
     SOCKET socket_fd;
     bool connected;
-    uint8_t buf[MCD_MAX_PACKET_LENGTH];
+    char buf[MCD_MAX_PACKET_LENGTH];
 
 public:
     uint32_t server_uid;
-    uint8_t *const msg_buf;
+    char *const msg_buf;
 
     /**
      * \brief Initializes a new TCP connection to a MCD server.
@@ -96,35 +97,35 @@ public:
     static MCDServer Open(const std::string &host, int port);
 
     /**
-     * \brief Sends a request to the MCD server.
+     * \brief Sends a message to the MCD server.
      *
-     * When the method is called, the request is expected to be at the
+     * When the method is called, the message is expected to be at the
      * beginning of msg_buf.
      *
      * @throws \c mcd_exception
      *
-     * @param request_size Request size in bytes.
+     * @param len Message length in bytes.
      * @param error Error information in case of failure.
      *
      * @returns Return code as defined in MCD API.
      */
-    mcd_return_et request(uint32_t request_size, mcd_error_info_st &error);
+    mcd_return_et send_message(uint32_t len, mcd_error_info_st &error);
 
     /**
-     * \brief Sends a request to the MCD server and awaits a response.
+     * \brief Receives messages from the server.
      *
-     * When the method is called, the request is expected to be at the
-     * beginning of msg_buf.
-     * After the method returns, the request will be overriden.
-     * On success, the response will then be at the beginning of msg_buf.
+     * On success, the messages will be at the beginning of msg_buf.
      *
-     * @param request_size Request size in bytes.
+     * When using a protocol like QMP, the server might also send messages that
+     * are not sent as a response to a RPC request. For that reason, the
+     * constraint that one request message precedes exactly one response message
+     * does not hold anymore.
+     *
      * @param error Error information in case of failure.
      *
      * @returns Return code as defined in MCD API.
      */
-    mcd_return_et request_response(uint32_t request_size,
-                                   mcd_error_info_st &error);
+    mcd_return_et receive_messages(mcd_error_info_st &error);
 
     MCDServer(MCDServer &) = delete;
     MCDServer &operator=(MCDServer &other) = delete;
