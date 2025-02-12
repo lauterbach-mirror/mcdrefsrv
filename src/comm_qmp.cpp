@@ -29,8 +29,9 @@ mcd_return_et MCDServer::receive_messages(mcd_error_info_st &error)
     static constexpr char DELIMITER = '\n';
     uint32_t received_bytes{0};
     do {
-        int num_bytes{recv(this->socket_fd, (char *)this->buf + received_bytes,
-                           MCD_MAX_PACKET_LENGTH - received_bytes, 0)};
+        long int num_bytes{recv(this->socket_fd,
+                                (char *)this->buf + received_bytes,
+                                MCD_MAX_PACKET_LENGTH - received_bytes, 0)};
 
         if (num_bytes == 0) {
             this->connected = false;

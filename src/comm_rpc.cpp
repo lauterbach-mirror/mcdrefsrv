@@ -41,7 +41,7 @@ mcd_return_et MCDServer::receive_messages(mcd_error_info_st &error)
     uint32_t length{*(uint32_t *)this->buf};
     uint32_t received_bytes{0};
     do {
-        int num_bytes{
+        long int num_bytes{
             recv(this->socket_fd,
                  (char *)this->buf + received_bytes + sizeof(uint32_t),
                  MCD_MAX_PACKET_LENGTH - received_bytes, 0)};
