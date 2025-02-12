@@ -613,10 +613,10 @@ typedef struct {
 uint32_t marshal_mcd_exit(char *buf, size_t buf_size);
 
 #define DECLARE_MARSHAL(function)                                     \
-    uint32_t marshal_##function##_args(##function##_args const *args, \
+    uint32_t marshal_##function##_args(function##_args const *args,   \
                                        char *buf, size_t buf_size);   \
     mcd_return_et unmarshal_##function##_result(                      \
-        char const *buf, ##function##_result *res,                    \
+        char const *buf, function##_result *res,                      \
         mcd_error_info_st *error_info);
 
 DECLARE_MARSHAL(mcd_open_server)

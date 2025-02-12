@@ -866,7 +866,7 @@ mcd_return_et unmarshal_mcd_open_server_result(char const *buf,
 }
 
 #define DEFINE_QMP(function, qmp)                                              \
-    uint32_t marshal_##function##_args(##function##_args const *args,          \
+    uint32_t marshal_##function##_args(function##_args const *args,            \
                                        char *buf, size_t buf_size)             \
     {                                                                          \
         ostreambuf b{buf, (std::streamsize)buf_size};                          \
@@ -875,7 +875,7 @@ mcd_return_et unmarshal_mcd_open_server_result(char const *buf,
         return (uint32_t)json_output.tellp();                                  \
     }                                                                          \
     mcd_return_et unmarshal_##function##_result(char const *buf,               \
-                                                ##function##_result *res,      \
+                                                function##_result *res,        \
                                                 mcd_error_info_st *error_info) \
     {                                                                          \
         const char *json_line = buf;                                           \

@@ -2016,7 +2016,7 @@ uint32_t marshal_mcd_exit(char *buf, size_t buf_size)
 }
 
 #define DEFINE_RPC(function, uid)                                              \
-    uint32_t marshal_##function##_args(##function##_args const *args,          \
+    uint32_t marshal_##function##_args(function##_args const *args,            \
                                        char *buf, size_t buf_size)             \
     {                                                                          \
         char *marsh = buf + sizeof(uint32_t); /* reserve space for length */   \
@@ -2027,7 +2027,7 @@ uint32_t marshal_mcd_exit(char *buf, size_t buf_size)
         return (uint32_t)(tail - buf);                                         \
     }                                                                          \
     mcd_return_et unmarshal_##function##_result(char const *buf,               \
-                                                ##function##_result *res,      \
+                                                function##_result *res,        \
                                                 mcd_error_info_st *error_info) \
     {                                                                          \
         uint32_t length;                                                       \
