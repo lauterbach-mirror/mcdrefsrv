@@ -960,6 +960,33 @@ mcd_return_et mcd_qry_reg_map_f(const mcd_core_st *core, uint32_t reg_group_id,
         return last_error->return_status;
     }
 
+    /* Partition large requests to avoid having message buffer overflows */
+    if (*num_regs > 100) {
+        uint32_t num{0};
+        do {
+            const uint32_t num_queried{
+                (*num_regs - num) < 100 ? (*num_regs - num) : 100};
+            uint32_t num_response{num_queried};
+            mcd_return_et ret{mcd_qry_reg_map_f(core, reg_group_id,
+                                                start_index + num,
+                                                &num_response,
+                                                reg_info + num)};
+
+            if (ret != MCD_RET_ACT_NONE) {
+                return ret;
+            }
+
+            num += num_response;
+            if (num_response < num_queried) {
+                break;
+            }
+        } while(num < *num_regs);
+
+        *num_regs = num;
+        last_error = &MCD_ERROR_NONE;
+        return last_error->return_status;
+    }
+
     mcd_qry_reg_map_args args{
         .core_uid{adapter->core_uid},
         .reg_group_id{reg_group_id},
