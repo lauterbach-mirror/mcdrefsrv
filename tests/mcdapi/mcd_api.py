@@ -417,7 +417,7 @@ class mcd_trig_complex_core_st(Structure):
                 ("option", c_uint32),
                 ("action", c_uint32),
                 ("action_param", c_uint32),
-                ("modified", c_uint32),
+                ("modified", c_bool),
                 ("state_mask", c_uint32),
                 ("addr_start", mcd_addr_st),
                 ("addr_range", c_uint64),
@@ -446,7 +446,7 @@ class mcd_trig_trig_bus_st(Structure):
                 ("option", c_uint32),
                 ("action", c_uint32),
                 ("action_param", c_uint32),
-                ("modified", c_uint32),
+                ("modified", c_bool),
                 ("state_mask", c_uint32),
                 ("trig_bus_value", c_uint32),
                 ("trig_bus_mask", c_uint32),]
@@ -468,28 +468,28 @@ class mcd_trig_custom_st(Structure):
                 ("option", c_uint32),
                 ("action", c_uint32),
                 ("action_param", c_uint32),
-                ("modified", c_uint32),
+                ("modified", c_bool),
                 ("state_mask", c_uint32),
                 ("ctrig_id", c_uint32),
                 ("ctrig_args", c_uint32),]
 
 class mcd_trig_state_st(Structure):
-    _fields_ = [("active", c_uint32),
-                ("captured", c_uint32),
-                ("captured_valid", c_uint32),
+    _fields_ = [("active", c_bool),
+                ("captured", c_bool),
+                ("captured_valid", c_bool),
                 ("count_value", c_uint64),
-                ("count_valid", c_uint32),]
+                ("count_valid", c_bool),]
 
 class mcd_trig_set_state_st(Structure):
-    _fields_ = [("active", c_uint32),
+    _fields_ = [("active", c_bool),
                 ("state", c_uint32),
-                ("state_valid", c_uint32),
+                ("state_valid", c_bool),
                 ("trig_bus", c_uint32),
-                ("trig_bus_valid", c_uint32),
-                ("trace", c_uint32),
-                ("trace_valid", c_uint32),
-                ("analysis", c_uint32),
-                ("analysis_valid", c_uint32),]
+                ("trig_bus_valid", c_bool),
+                ("trace", c_bool),
+                ("trace_valid", c_bool),
+                ("analysis", c_bool),
+                ("analysis_valid", c_bool),]
 
 class mcd_tx_st(Structure):
     _fields_ = [("addr", mcd_addr_st),
@@ -539,16 +539,16 @@ class mcd_trace_info_st(Structure):
 class mcd_trace_state_st(Structure):
     _fields_ = [("state", c_uint32),
                 ("mode", c_uint32),
-                ("autoarm", c_uint32),
-                ("wraparound", c_uint32),
+                ("autoarm", c_bool),
+                ("wraparound", c_bool),
                 ("frames", c_uint64),
                 ("count", c_uint64),
                 ("size", c_uint64),
                 ("trigger_delay", c_uint64),
                 ("timestamp_accuracy", c_uint8),
-                ("timestamp_is_time", c_uint32),
+                ("timestamp_is_time", c_bool),
                 ("options", c_uint32),
-                ("modified", c_uint32),
+                ("modified", c_bool),
                 ("info_str", c_char),]
 
 class mcd_trace_data_event_st(Structure):

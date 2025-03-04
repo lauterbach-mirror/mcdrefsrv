@@ -91,7 +91,8 @@ def spawn_qemu():
         # we need to be able to retrieve the relevant PID later to be able to close QEMU
         cmd_line = (f"wsl {WSL_OPTS} "
                      "echo $$ && "
-                    f"{QEMU_DIR}/{qemu} {qemu_opts} -mcd default -S -nographic")
+                    f"{QEMU_DIR}/{qemu} {qemu_opts} -qmp tcp:localhost:1235,server,nowait -S -nographic")
+        LOGGER.debug(cmd_line)
         wsl_process = subprocess.Popen(cmd_line, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         time.sleep(0.5)
         def close_qemu():
@@ -242,3 +243,19 @@ def queried_registers(open_core):
     ret = mcd_qry_reg_map_f(core, 0, start_index, byref(num_regs), reg_p)
     assert(ret == mcd_return_et.MCD_RET_ACT_NONE)
     return (reg_p, num_regs.value)
+
+@pytest.fixture(scope="module")
+def queried_reset_classes(open_core):
+    core = open_core
+    rst_class_vector = c_uint32(0)
+    ret = mcd_qry_rst_classes_f(core, byref(rst_class_vector))
+    assert(ret == mcd_return_et.MCD_RET_ACT_NONE)
+    return rst_class_vector
+
+@pytest.fixture(scope="module")
+def queried_trig_info(open_core):
+    core = open_core
+    trig_info = mcd_trig_info_st()
+    ret = mcd_qry_trig_info_f(core, byref(trig_info))
+    assert(ret == mcd_return_et.MCD_RET_ACT_NONE)
+    return trig_info
