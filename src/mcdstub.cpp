@@ -1248,10 +1248,14 @@ mcd_return_et mcd_qry_trig_f(const mcd_core_st *core, uint32_t trig_id,
         return last_error->return_status;
     }
 
-    mcd_rpc_trig_st rpc_trig{};
-    if (max_trig_size >= sizeof(mcd_trig_simple_core_st)) {
+    mcd_rpc_trig_st rpc_trig{
+        .is_complex_core{max_trig_size >= sizeof(mcd_trig_complex_core_st)},
+        .is_simple_core{max_trig_size >= sizeof(mcd_trig_simple_core_st)},
+    };
+
+    if (rpc_trig.is_simple_core) {
         rpc_trig.simple_core = (mcd_trig_simple_core_st *)trig;
-    } else if (max_trig_size >= sizeof(mcd_trig_complex_core_st)) {
+    } else if (rpc_trig.is_complex_core) {
         rpc_trig.complex_core = (mcd_trig_complex_core_st *)trig;
     }
 
