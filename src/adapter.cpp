@@ -205,7 +205,8 @@ mcd_return_et Core::update_core_database(mcd_error_info_st &mcd_error)
 
     if (mcd_qry_reg_groups_f(&unbound_core, 0, &num_reg_groups, nullptr) !=
         MCD_RET_ACT_NONE) {
-        return MCD_RET_ACT_HANDLE_ERROR;
+        mcd_qry_error_info_f(&unbound_core, &mcd_error);
+        return mcd_error.return_status;
     }
 
     for (uint32_t i = 0; i < num_reg_groups; i++) {
@@ -213,14 +214,16 @@ mcd_return_et Core::update_core_database(mcd_error_info_st &mcd_error)
         uint32_t num = 1;
         if (mcd_qry_reg_groups_f(&unbound_core, i, &num, &rg) !=
             MCD_RET_ACT_NONE) {
-            return MCD_RET_ACT_HANDLE_ERROR;
+            mcd_qry_error_info_f(&unbound_core, &mcd_error);
+            return mcd_error.return_status;
         }
 
         mcd_register_info_st *regs{new mcd_register_info_st[rg.n_registers]};
 
         if (mcd_qry_reg_map_f(&unbound_core, rg.reg_group_id, 0,
                               &rg.n_registers, regs) != MCD_RET_ACT_NONE) {
-            return MCD_RET_ACT_HANDLE_ERROR;
+            mcd_qry_error_info_f(&unbound_core, &mcd_error);
+            return mcd_error.return_status;
         }
 
         RegGroup reg_group{
