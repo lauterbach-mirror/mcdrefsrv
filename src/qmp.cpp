@@ -43,9 +43,10 @@ void json_get_to_optional(const nlohmann::json &j, const char *key, T &obj)
     }
 }
 
-#define JSON_STRING_GET_TO_ARRAY(j, key, arr)                          \
-    std::memcpy(arr, j.at(key).get_ref<const std::string &>().c_str(), \
-                sizeof(arr))
+#define JSON_STRING_GET_TO_ARRAY(j, key, arr) do {                     \
+    const std::string &_s = j.at(key);                                 \
+    _s.copy(arr, sizeof(arr));                                         \
+} while (0)
 
 void to_json(nlohmann::json &j, const mcd_core_con_info_st &info)
 {
