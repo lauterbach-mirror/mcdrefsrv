@@ -131,6 +131,11 @@ public:
 struct RegGroup {
     mcd_register_group_st info;
     std::vector<mcd_register_info_st> registers;
+
+    void add_register(const mcd_register_info_st &r) {
+        this->registers.push_back(r);
+        this->info.n_registers++;
+    }
 };
 
 class Core
