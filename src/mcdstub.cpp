@@ -1177,6 +1177,14 @@ mcd_return_et mcd_create_trig_f(const mcd_core_st *core, void *trig,
         return last_error->return_status;
     }
 
+    if (adapter->convert_address_to_server(
+        rpc_trig.is_simple_core ? rpc_trig.simple_core->addr_start
+                                : rpc_trig.complex_core->addr_start,
+        custom_mcd_error) != MCD_RET_ACT_NONE) {
+        last_error = &custom_mcd_error;
+        return last_error->return_status;
+    }
+
     mcd_create_trig_args args{
         .core_uid{adapter->core_uid},
         .trig{&rpc_trig},
@@ -1628,7 +1636,8 @@ mcd_return_et mcd_execute_txlist_f(const mcd_core_st *core,
 
     mcd_tx_st &client_tx{txlist->tx[0]};
     TxAdapter *tx_adapter;
-    if (adapter->get_tx_adapter(client_tx, &tx_adapter, custom_mcd_error)) {
+    if (adapter->get_tx_adapter(
+        client_tx.addr, &tx_adapter, custom_mcd_error)) {
         last_error = &custom_mcd_error;
         return last_error->return_status;
     }

@@ -87,6 +87,9 @@ public:
     virtual mcd_return_et collect_client_response(
         mcd_tx_st &client_response, const mcd_txlist_st &server_response,
         mcd_error_info_st &error) = 0;
+
+    virtual mcd_return_et convert_address_to_server(mcd_addr_st &addr,
+                                                    mcd_error_info_st &error);
 };
 
 struct PassthroughTxAdapter : TxAdapter {
@@ -101,6 +104,9 @@ struct PassthroughTxAdapter : TxAdapter {
     virtual mcd_return_et collect_client_response(
         mcd_tx_st &client_response, const mcd_txlist_st &server_response,
         mcd_error_info_st &error) override;
+
+    virtual mcd_return_et convert_address_to_server(
+        mcd_addr_st &addr, mcd_error_info_st &error) override;
 };
 
 class MemorySpace
@@ -196,6 +202,10 @@ public:
 
     /** \brief Returns a reference to a \c TxAdapter for a client's transaction.
      */
-    mcd_return_et get_tx_adapter(const mcd_tx_st &tx, TxAdapter **tx_adapter,
+    mcd_return_et get_tx_adapter(const mcd_addr_st &addr,
+                                 TxAdapter **tx_adapter,
                                  mcd_error_info_st &error) const;
+
+    mcd_return_et convert_address_to_server(mcd_addr_st &addr,
+                                            mcd_error_info_st &error) const;
 };

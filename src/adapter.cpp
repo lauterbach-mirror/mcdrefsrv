@@ -61,9 +61,28 @@ void TxAdapter::free_server_request(mcd_txlist_st &&server_request)
     delete server_request.tx;
 }
 
+mcd_return_et TxAdapter::convert_address_to_server(mcd_addr_st &addr,
+                                                   mcd_error_info_st &error)
+{
+    error = {
+        .return_status{MCD_RET_ACT_HANDLE_ERROR},
+        .error_code{MCD_ERR_PARAM},
+        .error_events{MCD_ERR_EVT_NONE},
+        .error_str{"address conversion not implemented for current adapter"},
+    };
+
+    return error.return_status;
+}
+
 TxAdapter *PassthroughTxAdapter::clone()
 {
     return new PassthroughTxAdapter{*this};
+}
+
+mcd_return_et PassthroughTxAdapter::convert_address_to_server(
+    mcd_addr_st &addr, mcd_error_info_st &error)
+{
+    return MCD_RET_ACT_NONE;
 }
 
 mcd_return_et PassthroughTxAdapter::yield_server_request(
@@ -394,11 +413,19 @@ mcd_return_et Core::query_reg_map(uint32_t reg_group_id, uint32_t start_index,
     return MCD_RET_ACT_NONE;
 }
 
-mcd_return_et Core::get_tx_adapter(const mcd_tx_st &tx, TxAdapter **tx_adapter,
+mcd_return_et Core::get_tx_adapter(const mcd_addr_st &addr,
+                                   TxAdapter **tx_adapter,
                                    mcd_error_info_st &error) const
 {
     for (const MemorySpace &ms : this->client_memory_spaces) {
-        if (ms.info.mem_space_id == tx.addr.mem_space_id) {
+        if (ms.info.mem_space_id == addr.mem_space_id) {
+            *tx_adapter = ms.get_tx_adapter();
+            return MCD_RET_ACT_NONE;
+        }
+    }
+
+    for (const MemorySpace &ms : this->server_memory_spaces) {
+        if (ms.info.mem_space_id == addr.mem_space_id) {
             *tx_adapter = ms.get_tx_adapter();
             return MCD_RET_ACT_NONE;
         }
@@ -412,4 +439,17 @@ mcd_return_et Core::get_tx_adapter(const mcd_tx_st &tx, TxAdapter **tx_adapter,
     };
 
     return error.return_status;
+}
+
+mcd_return_et Core::convert_address_to_server(mcd_addr_st &addr,
+                                              mcd_error_info_st &error) const
+{
+    TxAdapter *tx_adapter;
+    if (get_tx_adapter(addr, &tx_adapter, error) != MCD_RET_ACT_NONE) {
+        return error.return_status;
+    }
+
+    if (tx_adapter) {
+        return tx_adapter->convert_address_to_server(addr, error);
+    }
 }
