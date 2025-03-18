@@ -1965,6 +1965,10 @@ mcd_return_et mcd_qry_state_f(const mcd_core_st *core, mcd_core_state_st *state)
                                                 &custom_mcd_error);
     } while (status != MCD_RET_ACT_NONE);
 
+    if (state->state == MCD_CORE_STATE_HALTED) {
+        state->state = MCD_CORE_STATE_RUNNING;
+    }
+
     last_error = &MCD_ERROR_ASK_SERVER;
     return res.return_status;
 }
