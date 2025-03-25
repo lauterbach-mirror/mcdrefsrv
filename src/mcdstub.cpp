@@ -1965,7 +1965,8 @@ mcd_return_et mcd_qry_state_f(const mcd_core_st *core, mcd_core_state_st *state)
                                                 &custom_mcd_error);
     } while (status != MCD_RET_ACT_NONE);
 
-    if (state->state == MCD_CORE_STATE_HALTED) {
+    if (state->state == MCD_CORE_STATE_HALTED &&
+        strcmp(state->info_str, "halted") == 0) {
         state->state = MCD_CORE_STATE_RUNNING;
     }
 
