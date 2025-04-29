@@ -835,7 +835,6 @@ uint32_t marshal_mcd_open_server_args(mcd_open_server_args const *args,
 {
     ostreambuf b{buf, (std::streamsize)buf_size};
     std::ostream json_output{&b};
-    json_output << nlohmann::json{{"execute", "qmp_capabilities"}};
     json_output << nlohmann::json{{"execute", "mcd-open-server"},
                                   {"arguments", *args}};
     return (uint32_t)json_output.tellp();

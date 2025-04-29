@@ -91,7 +91,7 @@ def spawn_qemu():
         # we need to be able to retrieve the relevant PID later to be able to close QEMU
         cmd_line = (f"wsl {WSL_OPTS} "
                      "echo $$ && "
-                    f"{QEMU_DIR}/{qemu} {qemu_opts} -qmp tcp:localhost:1235,server,nowait -S -nographic")
+                    f"{QEMU_DIR}/{qemu} {qemu_opts} -mcd tcp:localhost:1235,server,nowait -S -nographic")
         LOGGER.debug(cmd_line)
         wsl_process = subprocess.Popen(cmd_line, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         time.sleep(0.5)
@@ -105,7 +105,7 @@ def spawn_qemu():
 
     def spawn_func_posix(request, qemu, qemu_opts):
         LOGGER.info(f"Spawning {qemu}")
-        cmd_line = (f"{QEMU_DIR}/{qemu} {qemu_opts} -qmp tcp:localhost:1235,server,nowait -S -nographic")
+        cmd_line = (f"{QEMU_DIR}/{qemu} {qemu_opts} -mcd tcp:localhost:1235,server,nowait -S -nographic")
         qemu_process = subprocess.Popen(cmd_line.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         time.sleep(0.5)
         def close_qemu():
