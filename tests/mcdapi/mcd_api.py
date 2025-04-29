@@ -1,6 +1,8 @@
 import os
 from ctypes import *
 
+c_bool = c_uint8 if os.name == 'posix' else c_uint32
+
 # Definitions of Constants
 
 MCD_API_VER_MAJOR = 1
