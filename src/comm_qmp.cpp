@@ -24,11 +24,32 @@
 
 #include "comm.hpp"
 
+#define TIMEOUT_SECONDS 5
+
 mcd_return_et MCDServer::receive_messages(mcd_error_info_st &error)
 {
+    fd_set readfds;
+    const struct timeval tv{
+        .tv_sec{TIMEOUT_SECONDS},
+    };
+
     static constexpr char DELIMITER = '\n';
     uint32_t received_bytes{0};
     do {
+        FD_ZERO(&readfds);
+        FD_SET(this->socket_fd, &readfds);
+        select((int)this->socket_fd + 1, &readfds, NULL, NULL, &tv);
+        if (!FD_ISSET(this->socket_fd, &readfds)) {
+            this->connected = false;
+            error = {
+                .return_status{MCD_RET_ACT_HANDLE_ERROR},
+                .error_code{MCD_ERR_TIMED_OUT},
+                .error_events{MCD_ERR_EVT_NONE},
+                .error_str{"receiving response failed (timeout)"},
+            };
+            return error.return_status;
+        }
+
         long int num_bytes{recv(this->socket_fd,
                                 (char *)this->buf + received_bytes,
                                 MCD_MAX_PACKET_LENGTH - received_bytes, 0)};

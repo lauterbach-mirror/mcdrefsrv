@@ -206,6 +206,10 @@ mcd_return_et mcd_open_server_f(const mcd_char_t *system_key,
         return last_error->return_status;
     }
 
+    if (g_mcd_server.has_value() && !g_mcd_server->is_connected()) {
+        g_mcd_server = std::nullopt;
+    }
+
     if (g_mcd_server.has_value()) {
         custom_mcd_error = {
             .return_status{MCD_RET_ACT_HANDLE_ERROR},
@@ -287,7 +291,7 @@ mcd_return_et mcd_open_server_f(const mcd_char_t *system_key,
     do {
         if (g_mcd_server->receive_messages(custom_mcd_error) !=
             MCD_RET_ACT_NONE) {
-            last_error = &MCD_ERROR_MARSHAL;
+            last_error = &custom_mcd_error;
             return last_error->return_status;
         }
         status = unmarshal_mcd_open_server_result(g_mcd_server->msg_buf, &res,
@@ -1713,6 +1717,12 @@ mcd_return_et mcd_run_f(const mcd_core_st *core, mcd_bool_t global)
 {
     if (!core || !core->instance) {
         last_error = &MCD_ERROR_INVALID_NULL_PARAM;
+        return last_error->return_status;
+    }
+
+    /* step, then go */
+    if (mcd_step_f(core, global, MCD_CORE_STEP_TYPE_INSTR, 1)
+        != MCD_RET_ACT_NONE) {
         return last_error->return_status;
     }
 

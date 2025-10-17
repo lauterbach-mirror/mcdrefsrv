@@ -97,6 +97,14 @@ public:
     static MCDServer Open(const std::string &host, int port);
 
     /**
+     * \brief Checks whether the server is currently in the "connected" state.
+     */
+    bool is_connected()
+    {
+        return this->connected;
+    }
+
+    /**
      * \brief Sends a message to the MCD server.
      *
      * When the method is called, the message is expected to be at the
