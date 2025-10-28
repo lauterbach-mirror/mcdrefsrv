@@ -29,7 +29,7 @@
 mcd_return_et MCDServer::receive_messages(mcd_error_info_st &error)
 {
     fd_set readfds;
-    const struct timeval tv{
+    struct timeval tv{
         .tv_sec{TIMEOUT_SECONDS},
     };
 
