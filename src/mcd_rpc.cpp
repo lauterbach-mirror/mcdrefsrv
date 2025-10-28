@@ -946,7 +946,7 @@ static uint32_t rpc_unmarshal_mcd_open_server_result(
 
                 mcd_char_t *host;
                 if (len) {
-                    host = (mcd_char_t *)malloc(sizeof(mcd_char_t) * len);
+                    host = new mcd_char_t[len];
                 } else {
                     host = 0;
                 }
@@ -980,7 +980,7 @@ static uint32_t rpc_unmarshal_mcd_open_server_result(
 
                 mcd_char_t *config_string;
                 if (len) {
-                    config_string = (char *)malloc(sizeof(mcd_char_t) * len);
+                    config_string = new mcd_char_t[len];
                 } else {
                     config_string = 0;
                 }
@@ -1217,8 +1217,7 @@ static uint32_t rpc_unmarshal_mcd_open_core_result(const char *buf,
         uint8_t opt;
         head += unmarshal_uint8_t(head, &opt);
         if (opt) {
-            obj->core.core_con_info =
-                (mcd_core_con_info_st *)malloc(sizeof(mcd_core_con_info_st));
+            obj->core.core_con_info = new mcd_core_con_info_st{};
             head +=
                 unmarshal_mcd_core_con_info_st(head, obj->core.core_con_info);
         }
